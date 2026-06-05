@@ -1,0 +1,36 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "morning briefing",
+      "intents": [
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "MorningBriefingIntent",
+          "slots": [],
+          "samples": [
+            "give me the weather",
+            "what's the weather like",
+            "weather briefing",
+            "what should I wear today",
+            "how's the weather",
+            "weather update",
+            "daily briefing",
+            "what's it like outside"
+          ]
+        }
+      ],
+      "types": []
+    }
+  }
+}

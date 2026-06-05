@@ -1,0 +1,49 @@
+{
+  "manifest": {
+    "publishingInformation": {
+      "locales": {
+        "en-US": {
+          "summary": "Get personalized morning weather briefings",
+          "examplePhrases": [
+            "Alexa, open Morning Briefing",
+            "Alexa, ask Morning Briefing for today's weather",
+            "Alexa, what should I wear today"
+          ],
+          "keywords": [
+            "weather",
+            "morning",
+            "briefing",
+            "daily",
+            "forecast"
+          ],
+          "name": "Morning Briefing",
+          "description": "Morning Briefing delivers personalized daily weather summaries with natural language recommendations for clothing and preparations. Set up a routine to get automatic briefings at 7:00 AM every day."
+        }
+      },
+      "isAvailableWorldwide": true,
+      "testingInstructions": "To test this skill:\n1. Say 'Alexa, open Morning Briefing'\n2. The skill will provide a weather briefing for your configured location\n3. API keys for OpenWeatherMap, Groq, and Gemini are required",
+      "category": "WEATHER",
+      "distributionCountries": []
+    },
+    "apis": {
+      "custom": {
+        "endpoint": {
+          "uri": "arn:aws:lambda:us-east-1:000000000000:function:ask-morning-briefing-default-skillStack-AlexaSkillFunction-XXXXXXXXXX"
+        },
+        "interfaces": []
+      }
+    },
+    "manifestVersion": "1.0",
+    "permissions": [],
+    "privacyAndCompliance": {
+      "allowsPurchases": false,
+      "usesPersonalInfo": false,
+      "isChildDirected": false,
+      "isExportCompliant": true,
+      "containsAds": false,
+      "localeSpecificPrivacyAndCompliance": {
+        "en-US": {}
+      }
+    }
+  }
+}
