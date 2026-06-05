@@ -7,15 +7,15 @@
   - Initialize git repository with appropriate .gitignore
   - _Requirements: 6.1, 6.2, 7.1, 7.2_
 
-- [ ] 2. Implement core weather data integration
-- [ ] 2.1 Create WeatherClient module for OpenWeatherMap integration
+- [x] 2. Implement core weather data integration
+- [x] 2.1 Create WeatherClient module for OpenWeatherMap integration
   - Implement WeatherClient class with API key authentication
   - Add forecast fetching method that returns next 12 hours of data
   - Implement data normalization to extract temp, precipitation, wind, humidity
   - Write unit tests for weather data parsing with mocked responses
   - _Requirements: 2.1, 2.2, 8.1, 8.2_
 
-- [ ] 2.2 Implement weather data error handling and validation
+- [x] 2.2 Implement weather data error handling and validation
   - Add timeout configuration for API calls (5 seconds)
   - Implement retry logic for transient failures
   - Add input validation for API responses
