@@ -123,8 +123,33 @@ class TestSkillConfig:
                 SkillConfig.from_environment()
             error_message = str(exc_info.value)
             assert 'OWM_API_KEY' in error_message
-            assert 'GROQ_API_KEY' in error_message
-            assert 'GEMINI_API_KEY' in error_message
+            assert 'At least one of GROQ_API_KEY or GEMINI_API_KEY' in error_message
+    
+    def test_from_environment_only_groq_key(self):
+        """Test successful loading with only Groq API key."""
+        test_env = {
+            'OWM_API_KEY': 'test_owm_key_1234567890',
+            'GROQ_API_KEY': 'test_groq_key_1234567890',
+            'USER_CITY': 'Vancouver,CA'
+        }
+        
+        with patch.dict(os.environ, test_env):
+            config = SkillConfig.from_environment()
+            assert config.groq_api_key == 'test_groq_key_1234567890'
+            assert config.gemini_api_key == ''
+    
+    def test_from_environment_only_gemini_key(self):
+        """Test successful loading with only Gemini API key."""
+        test_env = {
+            'OWM_API_KEY': 'test_owm_key_1234567890',
+            'GEMINI_API_KEY': 'test_gemini_key_1234567890',
+            'USER_CITY': 'Vancouver,CA'
+        }
+        
+        with patch.dict(os.environ, test_env):
+            config = SkillConfig.from_environment()
+            assert config.groq_api_key == ''
+            assert config.gemini_api_key == 'test_gemini_key_1234567890'
     
     def test_from_environment_missing_user_city(self):
         """Test error when USER_CITY is missing."""
@@ -141,26 +166,44 @@ class TestSkillConfig:
     
     def test_from_environment_short_api_keys(self):
         """Test validation of API key lengths."""
-        test_cases = [
-            ('OWM_API_KEY', 'short'),
-            ('GROQ_API_KEY', 'tiny'),
-            ('GEMINI_API_KEY', '123')
-        ]
-        
-        base_env = {
-            'OWM_API_KEY': 'test_owm_key_1234567890',
+        # Test short weather API key
+        test_env = {
+            'OWM_API_KEY': 'short',
             'GROQ_API_KEY': 'test_groq_key_1234567890',
-            'GEMINI_API_KEY': 'test_gemini_key_1234567890',
             'USER_CITY': 'Vancouver,CA'
         }
         
-        for key_name, short_value in test_cases:
-            test_env = {**base_env, key_name: short_value}
-            with patch.dict(os.environ, test_env):
-                with pytest.raises(ValueError) as exc_info:
-                    SkillConfig.from_environment()
-                assert key_name in str(exc_info.value)
-                assert 'invalid' in str(exc_info.value).lower()
+        with patch.dict(os.environ, test_env):
+            with pytest.raises(ValueError) as exc_info:
+                SkillConfig.from_environment()
+            assert 'OWM_API_KEY' in str(exc_info.value)
+            assert 'invalid' in str(exc_info.value).lower()
+        
+        # Test short Groq API key when present
+        test_env = {
+            'OWM_API_KEY': 'test_owm_key_1234567890',
+            'GROQ_API_KEY': 'tiny',
+            'USER_CITY': 'Vancouver,CA'
+        }
+        
+        with patch.dict(os.environ, test_env):
+            with pytest.raises(ValueError) as exc_info:
+                SkillConfig.from_environment()
+            assert 'GROQ_API_KEY' in str(exc_info.value)
+            assert 'invalid' in str(exc_info.value).lower()
+        
+        # Test short Gemini API key when present
+        test_env = {
+            'OWM_API_KEY': 'test_owm_key_1234567890',
+            'GEMINI_API_KEY': '123',
+            'USER_CITY': 'Vancouver,CA'
+        }
+        
+        with patch.dict(os.environ, test_env):
+            with pytest.raises(ValueError) as exc_info:
+                SkillConfig.from_environment()
+            assert 'GEMINI_API_KEY' in str(exc_info.value)
+            assert 'invalid' in str(exc_info.value).lower()
     
     def test_from_environment_invalid_city_format(self):
         """Test validation of USER_CITY format."""
@@ -229,21 +272,54 @@ class TestSkillConfigValidation:
         ]
         
         for pattern in placeholder_patterns:
-            # Test each API key with placeholder
-            for key_field in ['owm_api_key', 'groq_api_key', 'gemini_api_key']:
-                config_data = {
-                    'owm_api_key': 'valid_owm_key_123',
-                    'groq_api_key': 'valid_groq_key_123',
-                    'gemini_api_key': 'valid_gemini_key_123',
-                    'user_city': 'Vancouver,CA',
-                    'has_school_kids': False
-                }
-                config_data[key_field] = pattern
-                
-                config = SkillConfig(**config_data)
-                with pytest.raises(ValueError) as exc_info:
-                    config.validate()
-                assert 'placeholder' in str(exc_info.value).lower()
+            # Test weather API key with placeholder (always required)
+            config = SkillConfig(
+                owm_api_key=pattern,
+                groq_api_key='valid_groq_key_123',
+                gemini_api_key='',
+                user_city='Vancouver,CA',
+                has_school_kids=False
+            )
+            with pytest.raises(ValueError) as exc_info:
+                config.validate()
+            assert 'placeholder' in str(exc_info.value).lower()
+            
+            # Test Groq API key with placeholder (when present)
+            config = SkillConfig(
+                owm_api_key='valid_owm_key_123',
+                groq_api_key=pattern,
+                gemini_api_key='',
+                user_city='Vancouver,CA',
+                has_school_kids=False
+            )
+            with pytest.raises(ValueError) as exc_info:
+                config.validate()
+            assert 'placeholder' in str(exc_info.value).lower()
+            
+            # Test Gemini API key with placeholder (when present)
+            config = SkillConfig(
+                owm_api_key='valid_owm_key_123',
+                groq_api_key='',
+                gemini_api_key=pattern,
+                user_city='Vancouver,CA',
+                has_school_kids=False
+            )
+            with pytest.raises(ValueError) as exc_info:
+                config.validate()
+            assert 'placeholder' in str(exc_info.value).lower()
+    
+    def test_validate_no_llm_keys(self):
+        """Test validation fails when no LLM API keys are provided."""
+        config = SkillConfig(
+            owm_api_key='valid_owm_key_123',
+            groq_api_key='',
+            gemini_api_key='',
+            user_city='Vancouver,CA',
+            has_school_kids=False
+        )
+        with pytest.raises(ValueError) as exc_info:
+            config.validate()
+        assert 'At least one LLM API key' in str(exc_info.value)
     
     def test_validate_invalid_city_formats(self):
         """Test validation of various invalid city formats."""

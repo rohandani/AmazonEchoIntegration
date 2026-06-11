@@ -1,0 +1,27 @@
+{
+  "candidates": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Good morning! It's looking like a lovely day in Vancouver with clear skies and temperatures around 24 degrees. Perfect for a morning walk or bike ride! You'll be comfortable in light layers. No rain in sight, so no need for an umbrella today. Enjoy your beautiful day!"
+          }
+        ],
+        "role": "model"
+      },
+      "finishReason": "STOP",
+      "index": 0,
+      "safetyRatings": [
+        {
+          "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+          "probability": "NEGLIGIBLE"
+        }
+      ]
+    }
+  ],
+  "usageMetadata": {
+    "promptTokenCount": 145,
+    "candidatesTokenCount": 58,
+    "totalTokenCount": 203
+  }
+}

@@ -117,36 +117,30 @@ class TestLaunchRequestHandler:
         mock_context_instance.build_context.assert_called_once()
         mock_llm_instance.generate_briefing.assert_called_once()
     
-    @patch.dict(os.environ, {
-        'OWM_API_KEY': 'test_key',
-        'USER_CITY': 'TestCity,CA'
-    })
-    @patch('lambda_function.WeatherClient')
-    def test_handle_weather_error(self, mock_weather_client, handler, mock_handler_input):
+    def test_handle_weather_error(self, handler, mock_handler_input, mock_env_full):
         """Test handling when weather API fails."""
         
-        # Setup weather client to fail
-        mock_weather_instance = Mock()
-        mock_weather_instance.get_forecast.side_effect = WeatherClientError("API failed")
-        mock_weather_client.return_value = mock_weather_instance
-        
-        # Execute handler
-        response = handler.handle(mock_handler_input)
-        
-        # Should get weather error message
-        call_args = mock_handler_input.response_builder.speak.call_args[0]
-        assert "couldn't get today's weather" in call_args[0].lower()
-    
-    def test_handle_missing_env_vars(self, handler, mock_handler_input):
-        """Test handling when environment variables are missing."""
-        
-        # Clear environment
-        with patch.dict(os.environ, {}, clear=True):
+        with patch('lambda_function.WeatherClient') as mock_weather_client:
+            # Setup weather client to fail
+            mock_weather_instance = Mock()
+            mock_weather_instance.get_forecast.side_effect = WeatherClientError("API failed")
+            mock_weather_client.return_value = mock_weather_instance
+            
+            # Execute handler
             response = handler.handle(mock_handler_input)
             
-            # Should get error response
+            # Should get weather error message
             call_args = mock_handler_input.response_builder.speak.call_args[0]
-            assert "couldn't get your weather briefing" in call_args[0].lower()
+            assert "couldn't get today's weather" in call_args[0].lower()
+    
+    def test_handle_missing_env_vars(self, handler, mock_handler_input, mock_env_empty):
+        """Test handling when environment variables are missing."""
+        
+        response = handler.handle(mock_handler_input)
+        
+        # Should get error response
+        call_args = mock_handler_input.response_builder.speak.call_args[0]
+        assert "couldn't get your weather briefing" in call_args[0].lower()
 
 
 class TestMorningBriefingIntentHandler:

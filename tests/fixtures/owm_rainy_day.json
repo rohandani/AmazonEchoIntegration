@@ -1,0 +1,114 @@
+{
+  "cod": "200",
+  "message": 0,
+  "cnt": 4,
+  "list": [
+    {
+      "dt": 1609459200,
+      "main": {
+        "temp": 12.5,
+        "feels_like": 11.2,
+        "temp_min": 10.8,
+        "temp_max": 14.2,
+        "pressure": 1002,
+        "humidity": 85
+      },
+      "weather": [
+        {
+          "id": 500,
+          "main": "Rain",
+          "description": "light rain",
+          "icon": "10d"
+        }
+      ],
+      "wind": {
+        "speed": 6.2,
+        "deg": 240
+      },
+      "pop": 0.75
+    },
+    {
+      "dt": 1609470000,
+      "main": {
+        "temp": 11.8,
+        "feels_like": 10.5,
+        "temp_min": 9.9,
+        "temp_max": 13.1,
+        "pressure": 1000,
+        "humidity": 88
+      },
+      "weather": [
+        {
+          "id": 501,
+          "main": "Rain",
+          "description": "moderate rain",
+          "icon": "10d"
+        }
+      ],
+      "wind": {
+        "speed": 7.1,
+        "deg": 260
+      },
+      "pop": 0.92
+    },
+    {
+      "dt": 1609480800,
+      "main": {
+        "temp": 10.5,
+        "feels_like": 9.1,
+        "temp_min": 8.8,
+        "temp_max": 12.0,
+        "pressure": 998,
+        "humidity": 92
+      },
+      "weather": [
+        {
+          "id": 502,
+          "main": "Rain",
+          "description": "heavy intensity rain",
+          "icon": "10d"
+        }
+      ],
+      "wind": {
+        "speed": 8.5,
+        "deg": 270
+      },
+      "pop": 0.98
+    },
+    {
+      "dt": 1609491600,
+      "main": {
+        "temp": 11.2,
+        "feels_like": 9.8,
+        "temp_min": 9.5,
+        "temp_max": 12.8,
+        "pressure": 999,
+        "humidity": 89
+      },
+      "weather": [
+        {
+          "id": 500,
+          "main": "Rain",
+          "description": "light rain",
+          "icon": "10d"
+        }
+      ],
+      "wind": {
+        "speed": 6.8,
+        "deg": 250
+      },
+      "pop": 0.85
+    }
+  ],
+  "city": {
+    "id": 6173331,
+    "name": "Vancouver",
+    "coord": {
+      "lat": 49.2497,
+      "lon": -123.1193
+    },
+    "country": "CA",
+    "population": 0,
+    "timezone": -28800
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "id": "chatcmpl-test123",
+  "object": "chat.completion",
+  "created": 1609459200,
+  "model": "llama-3.3-70b-versatile",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "Good morning! Today in Vancouver will be sunny with temperatures reaching 27 degrees. Perfect weather for outdoor activities! You'll want light, comfortable clothing and maybe sunglasses. No rain expected, so leave the umbrella at home. Have a wonderful day!"
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 150,
+    "completion_tokens": 52,
+    "total_tokens": 202
+  }
+}

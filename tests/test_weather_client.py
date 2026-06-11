@@ -410,6 +410,189 @@ class TestWeatherClient:
         assert "***" in repr_str
 
 
+class TestWeatherClientComprehensiveMocking:
+    """Additional comprehensive tests with fixture data and edge cases."""
+    
+    @responses.activate
+    def test_get_forecast_with_fixture_sunny_data(self):
+        """Test weather data parsing using sunny day fixture."""
+        # Load fixture data
+        import json
+        import os
+        
+        fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures', 'owm_sunny_day.json')
+        with open(fixture_path, 'r') as f:
+            fixture_data = json.load(f)
+        
+        responses.add(
+            responses.GET,
+            "http://api.openweathermap.org/data/2.5/forecast",
+            json=fixture_data,
+            status=200
+        )
+        
+        client = WeatherClient("test_api_key", "Vancouver,CA")
+        result = client.get_forecast()
+        
+        # Verify results match fixture expectations
+        assert result["temp_min"] == 24.5  # First temp
+        assert result["temp_max"] == 29.1  # Highest temp from all periods
+        assert result["description"] == "clear sky"
+        assert result["max_precipitation_prob"] == 0.0
+        assert result["location"] == "Vancouver, CA"
+        assert result["humidity"] == 38  # Average of all humidity values
+        
+        # Wind speed should be average of all periods
+        expected_wind = (2.8 + 3.2 + 2.5 + 2.1) / 4
+        assert abs(result["wind_speed"] - expected_wind) < 0.1
+    
+    @responses.activate
+    def test_get_forecast_with_fixture_rainy_data(self):
+        """Test weather data parsing using rainy day fixture."""
+        import json
+        import os
+        
+        fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures', 'owm_rainy_day.json')
+        with open(fixture_path, 'r') as f:
+            fixture_data = json.load(f)
+        
+        responses.add(
+            responses.GET,
+            "http://api.openweathermap.org/data/2.5/forecast",
+            json=fixture_data,
+            status=200
+        )
+        
+        client = WeatherClient("test_api_key", "Vancouver,CA")
+        result = client.get_forecast()
+        
+        # Verify results match fixture expectations 
+        assert result["temp_min"] == 10.5  # Lowest temp
+        assert result["temp_max"] == 12.5  # Highest temp
+        assert result["description"] == "light rain"  # First description
+        assert result["max_precipitation_prob"] == 0.98  # Highest probability
+        assert result["location"] == "Vancouver, CA"
+        
+        # Should have high humidity due to rain
+        assert result["humidity"] >= 85
+    
+    @responses.activate
+    def test_extreme_weather_conditions(self):
+        """Test handling of extreme weather conditions."""
+        extreme_weather = {
+            "cod": "200",
+            "list": [
+                {
+                    "main": {"temp": -15.0, "humidity": 95},
+                    "weather": [{"description": "heavy snow"}],
+                    "wind": {"speed": 15.5},
+                    "pop": 1.0
+                }
+            ],
+            "city": {"name": "Yellowknife", "country": "CA"}
+        }
+        
+        responses.add(
+            responses.GET,
+            "http://api.openweathermap.org/data/2.5/forecast",
+            json=extreme_weather,
+            status=200
+        )
+        
+        client = WeatherClient("test_key", "Yellowknife,CA")
+        result = client.get_forecast()
+        
+        assert result["temp_min"] == -15.0
+        assert result["temp_max"] == -15.0
+        assert result["description"] == "heavy snow"
+        assert result["max_precipitation_prob"] == 1.0
+        assert result["wind_speed"] == 15.5
+        assert result["humidity"] == 95
+    
+    @responses.activate
+    def test_api_rate_limiting_behavior(self):
+        """Test behavior with API rate limiting responses."""
+        responses.add(
+            responses.GET,
+            "http://api.openweathermap.org/data/2.5/forecast",
+            status=429,
+            json={"cod": 429, "message": "API calls limit exceeded"}
+        )
+        
+        client = WeatherClient("test_key", "Vancouver,CA")
+        
+        from weather_client import WeatherAPIError
+        with pytest.raises(WeatherAPIError, match="API rate limit exceeded"):
+            client.get_forecast()
+    
+    @responses.activate
+    def test_network_connectivity_issues(self):
+        """Test various network connectivity problems."""
+        # Test DNS resolution failure
+        client = WeatherClient("test_key", "Vancouver,CA")
+        
+        with patch('requests.get') as mock_get:
+            mock_get.side_effect = requests.exceptions.ConnectionError("Name resolution failed")
+            
+            from weather_client import WeatherAPIError
+            with pytest.raises(WeatherAPIError, match="Connection failed after 3 attempts"):
+                client.get_forecast()
+    
+    def test_api_response_edge_cases(self):
+        """Test API response validation with various edge cases."""
+        client = WeatherClient("test_key", "Vancouver,CA")
+        
+        # Test with null temperature
+        invalid_data = {
+            "list": [{"main": {"temp": None, "humidity": 50}, "weather": [{"description": "clear"}]}],
+            "city": {"name": "Vancouver", "country": "CA"}
+        }
+        
+        from weather_client import WeatherDataError
+        with pytest.raises(WeatherDataError):
+            client._validate_api_response(invalid_data)
+    
+    def test_concurrent_request_simulation(self):
+        """Test behavior under concurrent request scenarios."""
+        import threading
+        import time
+        
+        client = WeatherClient("test_key", "Vancouver,CA")
+        results = []
+        errors = []
+        
+        def make_request():
+            try:
+                with patch('requests.get') as mock_get:
+                    mock_response = Mock()
+                    mock_response.status_code = 200
+                    mock_response.json.return_value = {
+                        "list": [{"main": {"temp": 20.0, "humidity": 50}, "weather": [{"description": "clear"}]}],
+                        "city": {"name": "Vancouver", "country": "CA"}
+                    }
+                    mock_response.raise_for_status.return_value = None
+                    mock_get.return_value = mock_response
+                    
+                    result = client.get_forecast()
+                    results.append(result)
+            except Exception as e:
+                errors.append(e)
+        
+        # Simulate concurrent requests
+        threads = []
+        for _ in range(5):
+            thread = threading.Thread(target=make_request)
+            threads.append(thread)
+            thread.start()
+        
+        for thread in threads:
+            thread.join()
+        
+        # All requests should succeed
+        assert len(results) == 5
+        assert len(errors) == 0
+
+
 if __name__ == "__main__":
     pytest.main([__file__])
 

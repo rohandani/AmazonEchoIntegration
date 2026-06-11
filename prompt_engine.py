@@ -143,7 +143,7 @@ OUTPUT REQUIREMENTS:
         precipitation_pct = int(precipitation_prob * 100)
         
         # Format temperature range
-        if abs(temp_max - temp_min) <= 2:
+        if abs(temp_max - temp_min) < 2:
             temp_info = f"around {int(round(temp_max))}°C"
         else:
             temp_info = f"{int(round(temp_min))}-{int(round(temp_max))}°C"
@@ -300,12 +300,12 @@ Generate your weather briefing now, incorporating all weather data and context n
         
         # Remove Markdown formatting
         markdown_patterns = [
+            (r'```.*?```', ''),         # ```code blocks``` -> empty (must be first!)
             (r'\*\*(.*?)\*\*', r'\1'),  # **bold** -> content
             (r'\*(.*?)\*', r'\1'),      # *italic* -> content  
             (r'__(.*?)__', r'\1'),      # __bold__ -> content
             (r'_(.*?)_', r'\1'),        # _italic_ -> content
             (r'`(.*?)`', r'\1'),        # `code` -> content
-            (r'```.*?```', ''),         # ```code blocks``` -> empty
             (r'#{1,6}\s*', ''),         # # headers -> remove hashes
             (r'\[([^\]]+)\]\([^\)]+\)', r'\1'),  # [text](url) -> text
         ]

@@ -45,8 +45,8 @@ class SkillConfig:
         """
         # Load required API keys
         owm_api_key = os.getenv('OWM_API_KEY')
-        groq_api_key = os.getenv('GROQ_API_KEY')
-        gemini_api_key = os.getenv('GEMINI_API_KEY')
+        groq_api_key = os.getenv('GROQ_API_KEY', '')  # Optional
+        gemini_api_key = os.getenv('GEMINI_API_KEY', '')  # Optional
         user_city = os.getenv('USER_CITY')
         
         # Load optional settings with defaults
@@ -56,12 +56,12 @@ class SkillConfig:
         missing_vars = []
         if not owm_api_key:
             missing_vars.append('OWM_API_KEY')
-        if not groq_api_key:
-            missing_vars.append('GROQ_API_KEY')
-        if not gemini_api_key:
-            missing_vars.append('GEMINI_API_KEY')
         if not user_city:
             missing_vars.append('USER_CITY')
+        
+        # At least one LLM API key must be present
+        if not groq_api_key and not gemini_api_key:
+            missing_vars.append('At least one of GROQ_API_KEY or GEMINI_API_KEY')
             
         if missing_vars:
             raise ConfigurationError(
@@ -71,9 +71,11 @@ class SkillConfig:
         # Validate API key formats (basic validation)
         if len(owm_api_key.strip()) < 10:
             raise ValueError("OWM_API_KEY appears to be invalid (too short)")
-        if len(groq_api_key.strip()) < 10:
+        
+        # Validate LLM keys if present
+        if groq_api_key and len(groq_api_key.strip()) < 10:
             raise ValueError("GROQ_API_KEY appears to be invalid (too short)")
-        if len(gemini_api_key.strip()) < 10:
+        if gemini_api_key and len(gemini_api_key.strip()) < 10:
             raise ValueError("GEMINI_API_KEY appears to be invalid (too short)")
             
         # Basic validation - check basic format issues early
@@ -101,8 +103,8 @@ class SkillConfig:
         
         return cls(
             owm_api_key=owm_api_key.strip(),
-            groq_api_key=groq_api_key.strip(),
-            gemini_api_key=gemini_api_key.strip(),
+            groq_api_key=groq_api_key.strip() if groq_api_key else '',
+            gemini_api_key=gemini_api_key.strip() if gemini_api_key else '',
             user_city=user_city.strip(),
             has_school_kids=has_school_kids
         )
@@ -122,13 +124,25 @@ class SkillConfig:
             'insert_'
         ]
         
+        # Check weather API key (always required)
         for pattern in placeholder_patterns:
             if pattern in self.owm_api_key.lower():
                 raise ValueError("OWM_API_KEY appears to be a placeholder value")
-            if pattern in self.groq_api_key.lower():
-                raise ValueError("GROQ_API_KEY appears to be a placeholder value")
-            if pattern in self.gemini_api_key.lower():
-                raise ValueError("GEMINI_API_KEY appears to be a placeholder value")
+        
+        # Check LLM API keys (if present)
+        if self.groq_api_key:
+            for pattern in placeholder_patterns:
+                if pattern in self.groq_api_key.lower():
+                    raise ValueError("GROQ_API_KEY appears to be a placeholder value")
+        
+        if self.gemini_api_key:
+            for pattern in placeholder_patterns:
+                if pattern in self.gemini_api_key.lower():
+                    raise ValueError("GEMINI_API_KEY appears to be a placeholder value")
+        
+        # Ensure at least one LLM API key is valid
+        if not self.groq_api_key and not self.gemini_api_key:
+            raise ValueError("At least one LLM API key (GROQ_API_KEY or GEMINI_API_KEY) must be provided")
         
         # Validate city format more thoroughly
         city_parts = self.user_city.split(',')

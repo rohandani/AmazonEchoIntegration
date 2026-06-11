@@ -59,6 +59,8 @@ class ContextBuilder:
         
         # Extract user preferences
         location = user_preferences.get('location', 'your area')
+        if not location or not location.strip():
+            location = 'your area'
         has_school_kids = user_preferences.get('has_school_kids', False)
         
         # Determine day type and name

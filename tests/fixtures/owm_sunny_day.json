@@ -1,0 +1,114 @@
+{
+  "cod": "200",
+  "message": 0,
+  "cnt": 4,
+  "list": [
+    {
+      "dt": 1609459200,
+      "main": {
+        "temp": 24.5,
+        "feels_like": 23.8,
+        "temp_min": 22.1,
+        "temp_max": 26.3,
+        "pressure": 1015,
+        "humidity": 42
+      },
+      "weather": [
+        {
+          "id": 800,
+          "main": "Clear",
+          "description": "clear sky",
+          "icon": "01d"
+        }
+      ],
+      "wind": {
+        "speed": 2.8,
+        "deg": 180
+      },
+      "pop": 0.0
+    },
+    {
+      "dt": 1609470000,
+      "main": {
+        "temp": 27.2,
+        "feels_like": 26.5,
+        "temp_min": 25.0,
+        "temp_max": 28.8,
+        "pressure": 1014,
+        "humidity": 38
+      },
+      "weather": [
+        {
+          "id": 800,
+          "main": "Clear",
+          "description": "clear sky",
+          "icon": "01d"
+        }
+      ],
+      "wind": {
+        "speed": 3.2,
+        "deg": 200
+      },
+      "pop": 0.0
+    },
+    {
+      "dt": 1609480800,
+      "main": {
+        "temp": 29.1,
+        "feels_like": 28.2,
+        "temp_min": 27.5,
+        "temp_max": 30.2,
+        "pressure": 1013,
+        "humidity": 35
+      },
+      "weather": [
+        {
+          "id": 800,
+          "main": "Clear", 
+          "description": "clear sky",
+          "icon": "01d"
+        }
+      ],
+      "wind": {
+        "speed": 2.5,
+        "deg": 210
+      },
+      "pop": 0.0
+    },
+    {
+      "dt": 1609491600,
+      "main": {
+        "temp": 28.8,
+        "feels_like": 27.9,
+        "temp_min": 26.8,
+        "temp_max": 29.5,
+        "pressure": 1012,
+        "humidity": 40
+      },
+      "weather": [
+        {
+          "id": 800,
+          "main": "Clear",
+          "description": "clear sky", 
+          "icon": "01d"
+        }
+      ],
+      "wind": {
+        "speed": 2.1,
+        "deg": 190
+      },
+      "pop": 0.0
+    }
+  ],
+  "city": {
+    "id": 6173331,
+    "name": "Vancouver",
+    "coord": {
+      "lat": 49.2497,
+      "lon": -123.1193
+    },
+    "country": "CA",
+    "population": 0,
+    "timezone": -28800
+  }
+}
