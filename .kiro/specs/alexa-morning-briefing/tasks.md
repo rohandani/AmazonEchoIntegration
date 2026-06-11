@@ -67,22 +67,22 @@
   - Write unit tests for sanitization edge cases
   - _Requirements: 2.1, 7.4, 8.1_
 
-- [ ] 6. Create Alexa Skill handler and intent management
-- [ ] 6.1 Implement main Lambda function with ASK SDK integration
+- [x] 6. Create Alexa Skill handler and intent management
+- [x] 6.1 Implement main Lambda function with ASK SDK integration
   - Create lambda_function.py with ask-sdk-core handlers
   - Implement LaunchRequestHandler for "open Morning Briefing" command
   - Add MorningBriefingIntentHandler as core orchestration logic
   - Write integration tests for Alexa request/response cycle
   - _Requirements: 1.1, 5.1, 5.2, 8.3_
 
-- [ ] 6.2 Add helper intent handlers for user experience
+- [x] 6.2 Add helper intent handlers for user experience
   - Implement HelpIntentHandler with usage instructions
   - Create CancelAndStopIntentHandler for session management
   - Add SessionEndedRequestHandler for cleanup
   - Write unit tests for each intent handler behavior
   - _Requirements: 5.4, 5.5_
 
-- [ ] 6.3 Create Alexa Skill interaction model configuration
+- [x] 6.3 Create Alexa Skill interaction model configuration
   - Define skill.json manifest with permissions and endpoints
   - Create interaction model with MorningBriefingIntent and sample utterances
   - Configure invocation name as "morning briefing"
