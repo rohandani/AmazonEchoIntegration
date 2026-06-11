@@ -52,15 +52,15 @@
   - Write unit tests for double-failure scenarios
   - _Requirements: 4.2, 4.3, 4.5_
 
-- [ ] 5. Build prompt engineering system
-- [ ] 5.1 Create PromptEngine module for LLM instruction assembly
+- [x] 5. Build prompt engineering system
+- [x] 5.1 Create PromptEngine module for LLM instruction assembly
   - Implement prompt template that constrains output to 50-70 words
   - Add weather data injection with proper formatting
   - Include day-type and family context in prompts
   - Write unit tests for prompt assembly with various contexts
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 3.2, 3.3_
 
-- [ ] 5.2 Implement output sanitization for Alexa SSML compatibility
+- [x] 5.2 Implement output sanitization for Alexa SSML compatibility
   - Add text cleaning to remove HTML/Markdown characters
   - Implement length validation for voice output
   - Add special character filtering for SSML safety
